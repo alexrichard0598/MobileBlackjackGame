@@ -1,5 +1,7 @@
+import 'package:blackjack/bl/card.dart';
 import 'package:blackjack/ui/background.dart';
 import 'package:flutter/material.dart';
+import 'package:blackjack/bl/gameMethods.dart';
 
 class Blackjack extends StatefulWidget {
   @override
@@ -93,14 +95,14 @@ class _DealerBoxState extends State<DealerBox> {
         ),
         child: Stack(
           children: <Widget>[
-            Align(
-              child: Image.asset("assets/images/TenSpades.jpg"),
-              alignment: Alignment(-0.96, 0),
-            ),
-            Align(
-              child: Image.asset("assets/images/TenDiamonds.jpg"),
-              alignment: Alignment(-0.88, 0),
-            ),
+            GameMethods.createCardImage(
+                BlackjackCard(FaceValue.Four, Suit.Spades), 0),
+            GameMethods.createCardImage(
+                BlackjackCard(FaceValue.Six, Suit.Diamonds), 1),
+            GameMethods.createCardImage(
+                BlackjackCard(FaceValue.Seven, Suit.Clubs), 2),
+            GameMethods.createCardImage(
+                BlackjackCard(FaceValue.Three, Suit.Hearts), 3),
           ],
         ),
       ),
@@ -224,14 +226,10 @@ class _PlayerBoxState extends State<PlayerBox> {
         ),
         child: Stack(
           children: <Widget>[
-            Align(
-              child: Image.asset("assets/images/AceHearts.jpg"),
-              alignment: Alignment(-0.96, 0),
-            ),
-            Align(
-              child: Image.asset("assets/images/TenHearts.jpg"),
-              alignment: Alignment(-0.88, 0),
-            ),
+            GameMethods.createCardImage(
+                BlackjackCard(FaceValue.Ace, Suit.Clubs), 0),
+            GameMethods.createCardImage(
+                BlackjackCard(FaceValue.Ten, Suit.Hearts), 1),
           ],
         ),
       ),
