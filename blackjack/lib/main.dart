@@ -1,4 +1,4 @@
-import 'package:blackjack/ui/menu.dart';
+import 'package:blackjack/ui/mainMenu.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(
