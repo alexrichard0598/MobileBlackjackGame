@@ -4,18 +4,32 @@ import 'package:blackjack/ui/background.dart';
 import 'package:flutter/material.dart';
 import 'package:blackjack/bl/gameMethods.dart';
 
+class UIUpdater {
+  final void Function() updateUi;
+  UIUpdater({this.updateUi});
+}
+
+UIUpdater uiUpdate;
+
 class Blackjack extends StatefulWidget {
   @override
   _BlackjackState createState() => _BlackjackState();
 }
 
 class _BlackjackState extends State<Blackjack> {
+  void updateUI() {
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
 
     //Initialize the game
     GameMethods.startGame();
+
+    //bind the set state of this widget to uiUpdate
+    uiUpdate = UIUpdater(updateUi: updateUI);
   }
 
   @override
@@ -120,7 +134,9 @@ class _DealerBoxState extends State<DealerBox> {
 }
 
 class MenuButtons extends StatefulWidget {
-  MenuButtons({Key key}) : super(key: key);
+  MenuButtons({
+    Key key,
+  }) : super(key: key);
 
   @override
   _MenuButtonsState createState() => _MenuButtonsState();
@@ -137,9 +153,8 @@ class _MenuButtonsState extends State<MenuButtons> {
           child: RaisedButton(
             child: Text("New Game"),
             onPressed: () {
-              setState(() {
-                GameMethods.startGame();
-              });
+              GameMethods.startGame();
+              uiUpdate.updateUi();
             },
           ),
         ),
