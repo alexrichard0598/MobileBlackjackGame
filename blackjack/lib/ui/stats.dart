@@ -1,7 +1,12 @@
 import 'package:blackjack/ui/background.dart';
 import 'package:flutter/material.dart';
 
-class Stats extends StatelessWidget {
+class Stats extends StatefulWidget {
+  @override
+  _StatsState createState() => _StatsState();
+}
+
+class _StatsState extends State<Stats> {
   var listLength = 7;
 
   @override

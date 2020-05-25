@@ -1,6 +1,5 @@
 enum FaceValue {
   Ace,
-  One,
   Two,
   Three,
   Four,

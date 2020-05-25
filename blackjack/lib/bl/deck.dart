@@ -23,7 +23,7 @@ class Deck {
     var rng = new Random();
 
     while (_deck.length > 0) {
-      int cardIndex = rng.nextInt(_deck.length - 1);
+      int cardIndex = rng.nextInt(_deck.length);
       BlackjackCard cardRemoved = _deck[cardIndex];
       _deck.removeAt(cardIndex);
       newDeck.add(cardRemoved);
@@ -43,5 +43,9 @@ class Deck {
     } else {
       throw ArgumentError("There are no cards in the deck - deal again.");
     }
+  }
+
+  void emptyDeck() {
+    _deck.clear();
   }
 }

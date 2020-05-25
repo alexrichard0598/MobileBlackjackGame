@@ -1,4 +1,5 @@
 import 'package:blackjack/bl/card.dart';
+import 'package:blackjack/globals.dart';
 import 'package:blackjack/ui/background.dart';
 import 'package:flutter/material.dart';
 import 'package:blackjack/bl/gameMethods.dart';
@@ -9,6 +10,14 @@ class Blackjack extends StatefulWidget {
 }
 
 class _BlackjackState extends State<Blackjack> {
+  @override
+  void initState() {
+    super.initState();
+
+    //Initialize the game
+    GameMethods.startGame();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -127,14 +136,18 @@ class _MenuButtonsState extends State<MenuButtons> {
           minWidth: 120,
           child: RaisedButton(
             child: Text("New Game"),
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                GameMethods.startGame();
+              });
+            },
           ),
         ),
         ButtonTheme(
           minWidth: 120,
           child: RaisedButton(
             child: Text("Help"),
-            onPressed: () {},
+            onPressed: _showHelp,
           ),
         ),
         ButtonTheme(
@@ -149,9 +162,45 @@ class _MenuButtonsState extends State<MenuButtons> {
       ],
     );
   }
+
+  Future<void> _showHelp() async {
+    String helpText = "The goal of Blackjack is to get as close to 21 without going over. " +
+        "The player is dealt two cards, and then the dealer deals themselves two " +
+        "cards, one face down, which is called the hole, and the other face up.\r\n\r\n" +
+        "The scoring for Blackjack is as follows:\r\n" +
+        "\u2022 Numbered cards are worth the amount on the card\r\n" +
+        "\u2022 Kings, Queens and Jacks are worth 10\r\n" +
+        "\u2022 Aces are worth 11 or 1 if 11 would put the player over 21\r\n\r\n" +
+        "The player as two options, Hit or Stand. If you choose hit, the dealer deals " +
+        "you another card. If you choose stand you end your turn and are not allowed any " +
+        "more cards. After you stand the dealer will deal any additional cards to " +
+        "themselves until they beat the player or reach 17, unless it is a Soft Seventeen " +
+        "(a seventeen in which one of the cards is an Ace valued at 11)." +
+        "\r\n\r\n This varient of Blackjack uses three decks and the " +
+        "dealer wins all ties except when the player has Blackjack.";
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Help"),
+            content: SingleChildScrollView(child: Text(helpText)),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Ok"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          );
+        });
+  }
 }
 
 class PlayerControls extends StatefulWidget {
+  PlayerControls({Key key}) : super(key: key);
+
   @override
   _PlayerControlsState createState() => _PlayerControlsState();
 }
@@ -181,7 +230,7 @@ class _PlayerControlsState extends State<PlayerControls> {
               color: Colors.white,
               alignment: Alignment.center,
               child: Text(
-                "21",
+                GameMethods.calculateHandValue(playerHand).toString(),
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 20,
@@ -206,11 +255,15 @@ class _PlayerControlsState extends State<PlayerControls> {
 }
 
 class PlayerBox extends StatefulWidget {
+  PlayerBox({Key key}) : super(key: key);
+
   @override
   _PlayerBoxState createState() => _PlayerBoxState();
 }
 
 class _PlayerBoxState extends State<PlayerBox> {
+  List<Widget> children = List<Widget>();
+
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -225,15 +278,9 @@ class _PlayerBoxState extends State<PlayerBox> {
           ),
         ),
         child: Stack(
-          children: <Widget>[
-            GameMethods.createCardImage(
-                BlackjackCard(FaceValue.Ace, Suit.Clubs), 0),
-            GameMethods.createCardImage(
-                BlackjackCard(FaceValue.Ten, Suit.Hearts), 1),
-          ],
+          children: GameMethods.displayPlayerHand(playerHand),
         ),
       ),
     );
-    ;
   }
 }
