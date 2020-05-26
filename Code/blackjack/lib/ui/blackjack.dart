@@ -290,6 +290,22 @@ class _PlayerBoxState extends State<PlayerBox> {
 
   @override
   Widget build(BuildContext context) {
+    try {
+      children.clear();
+      children = GameMethods.displayPlayerHand(playerHand);
+    } catch (ex) {
+      children.add(Container(
+        child: Text(
+          ex.toString(),
+          style: TextStyle(
+            backgroundColor: Colors.white,
+            color: Colors.black,
+            fontSize: 22,
+            decoration: TextDecoration.none,
+          ),
+        ),
+      ));
+    }
     return Align(
       alignment: Alignment(0, 0.9),
       child: Container(
@@ -302,7 +318,7 @@ class _PlayerBoxState extends State<PlayerBox> {
           ),
         ),
         child: Stack(
-          children: GameMethods.displayPlayerHand(playerHand),
+          children: children,
         ),
       ),
     );
