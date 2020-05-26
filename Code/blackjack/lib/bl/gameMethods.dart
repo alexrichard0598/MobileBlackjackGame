@@ -120,9 +120,17 @@ class GameMethods {
 
   static void startGame() {
     resetGameGlobals();
+
+    //Setup the deck
     blackjackDeck.createShoe(4);
     blackjackDeck.shuffleDeck(7);
+
+    //Deal the player cards
     playerHand.add(blackjackDeck.drawCard());
     playerHand.add(blackjackDeck.drawCard());
+
+    //Deal the dealer cards
+    dealerHand.add(blackjackDeck.drawCard());
+    dealerHand.add(blackjackDeck.drawCard());
   }
 }
