@@ -4,7 +4,7 @@ class UIMethods {
   final void Function() updateUi;
   UIMethods({this.updateUi});
 
-  Future<void> showErrorMessage(BuildContext context, dynamic ex) async {
+  static Future<void> showErrorMessage(BuildContext context, dynamic ex) async {
     return showDialog(
         context: context,
         barrierDismissible: false,

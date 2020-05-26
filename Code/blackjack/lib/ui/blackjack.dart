@@ -153,7 +153,7 @@ class _MenuButtonsState extends State<MenuButtons> {
                 GameMethods.startGame();
                 uiMethods.updateUi();
               } catch (ex) {
-                uiMethods.showErrorMessage(context, ex);
+                UIMethods.showErrorMessage(context, ex);
               }
             },
           ),
@@ -166,7 +166,7 @@ class _MenuButtonsState extends State<MenuButtons> {
                 try {
                   _showHelp();
                 } catch (ex) {
-                  uiMethods.showErrorMessage(context, ex);
+                  UIMethods.showErrorMessage(context, ex);
                 }
               }),
         ),
@@ -178,7 +178,7 @@ class _MenuButtonsState extends State<MenuButtons> {
               try {
                 Navigator.pop(context);
               } catch (ex) {
-                uiMethods.showErrorMessage(context, ex);
+                UIMethods.showErrorMessage(context, ex);
               }
             },
           ),
