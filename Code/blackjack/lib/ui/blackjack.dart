@@ -242,7 +242,10 @@ class _PlayerControlsState extends State<PlayerControls> {
             child: ButtonTheme(
               child: RaisedButton(
                 child: Text("Hit"),
-                onPressed: () {},
+                onPressed: () {
+                  GameMethods.hit(playerHand);
+                  uiMethods.updateUi();
+                },
               ),
             ),
           ),
@@ -254,7 +257,7 @@ class _PlayerControlsState extends State<PlayerControls> {
               color: Colors.white,
               alignment: Alignment.center,
               child: Text(
-                GameMethods.calculateHandValue(playerHand).toString(),
+                GameMethods.calculateHandValue(playerHand, false).toString(),
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 20,
@@ -292,7 +295,7 @@ class _PlayerBoxState extends State<PlayerBox> {
   Widget build(BuildContext context) {
     try {
       children.clear();
-      children = GameMethods.displayPlayerHand(playerHand);
+      children = GameMethods.displayPlayerHand();
     } catch (ex) {
       children.add(Container(
         child: Text(

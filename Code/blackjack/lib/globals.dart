@@ -7,3 +7,6 @@ int currentUserID = 0;
 Hand playerHand = Hand();
 Hand dealerHand = Hand();
 Deck blackjackDeck = Deck();
+bool hasPlayerStood = false;
+bool hasDealerStood = false;
+bool isShoeRevealed = false;
