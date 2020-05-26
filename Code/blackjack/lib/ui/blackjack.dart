@@ -1,4 +1,3 @@
-import 'package:blackjack/bl/card.dart';
 import 'package:blackjack/globals.dart';
 import 'package:blackjack/ui/background.dart';
 import 'package:blackjack/ui/uiMethods.dart';
@@ -36,27 +35,43 @@ class _BlackjackState extends State<Blackjack> {
         BlackjackBackground(),
         StatusBar(),
         DealerBox(),
-        Align(
-          alignment: Alignment(0, -0.42),
-          child: Container(
-            alignment: Alignment.center,
-            width: 50,
-            height: 35,
-            color: Colors.white,
-            child: Text(
-              "20",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                decoration: TextDecoration.none,
-              ),
-            ),
-          ),
-        ),
+        DealerLable(),
         MenuButtons(),
         PlayerControls(),
         PlayerBox(),
       ],
+    );
+  }
+}
+
+class DealerLable extends StatefulWidget {
+  DealerLable({Key key}) : super(key: key);
+
+  @override
+  _DealerLableState createState() => _DealerLableState();
+}
+
+class _DealerLableState extends State<DealerLable> {
+  @override
+  Widget build(BuildContext context) {
+    String lable = !isShoeRevealed ? ">" : "";
+    lable += GameMethods.calculateHandValue(dealerHand, true).toString();
+    return Align(
+      alignment: Alignment(0, -0.42),
+      child: Container(
+        alignment: Alignment.center,
+        width: 50,
+        height: 35,
+        color: Colors.white,
+        child: Text(
+          lable,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+            decoration: TextDecoration.none,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -99,8 +114,26 @@ class DealerBox extends StatefulWidget {
 }
 
 class _DealerBoxState extends State<DealerBox> {
+  List<Widget> children = List<Widget>();
+
   @override
   Widget build(BuildContext context) {
+    try {
+      children.clear();
+      children = GameMethods.displayDealerHand();
+    } catch (ex) {
+      children.add(Container(
+        child: Text(
+          ex.toString(),
+          style: TextStyle(
+            backgroundColor: Colors.white,
+            color: Colors.black,
+            fontSize: 22,
+            decoration: TextDecoration.none,
+          ),
+        ),
+      ));
+    }
     return Align(
       alignment: Alignment(0, -0.8),
       child: Container(
@@ -112,18 +145,7 @@ class _DealerBoxState extends State<DealerBox> {
             color: Colors.yellow,
           ),
         ),
-        child: Stack(
-          children: <Widget>[
-            GameMethods.createCardImage(
-                BlackjackCard(FaceValue.Four, Suit.Spades), 0),
-            GameMethods.createCardImage(
-                BlackjackCard(FaceValue.Six, Suit.Diamonds), 1),
-            GameMethods.createCardImage(
-                BlackjackCard(FaceValue.Seven, Suit.Clubs), 2),
-            GameMethods.createCardImage(
-                BlackjackCard(FaceValue.Three, Suit.Hearts), 3),
-          ],
-        ),
+        child: Stack(children: children),
       ),
     );
   }
