@@ -4,12 +4,29 @@ import 'package:blackjack/ui/background.dart';
 import 'package:flutter/material.dart';
 import 'package:blackjack/bl/gameMethods.dart';
 
-class UIUpdater {
+class UIMethods {
   final void Function() updateUi;
-  UIUpdater({this.updateUi});
+  UIMethods({this.updateUi});
+
+  Future<void> showErrorMessage(BuildContext context, dynamic ex) async {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Error"),
+            content: Text(ex.toString()),
+            actions: <Widget>[
+              RaisedButton(
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          );
+        });
+  }
 }
 
-UIUpdater uiUpdate;
+UIMethods uiMethods;
 
 class Blackjack extends StatefulWidget {
   @override
@@ -29,7 +46,7 @@ class _BlackjackState extends State<Blackjack> {
     GameMethods.startGame();
 
     //bind the set state of this widget to uiUpdate
-    uiUpdate = UIUpdater(updateUi: updateUI);
+    uiMethods = UIMethods(updateUi: updateUI);
   }
 
   @override
@@ -153,8 +170,12 @@ class _MenuButtonsState extends State<MenuButtons> {
           child: RaisedButton(
             child: Text("New Game"),
             onPressed: () {
-              GameMethods.startGame();
-              uiUpdate.updateUi();
+              try {
+                GameMethods.startGame();
+                uiMethods.updateUi();
+              } catch (ex) {
+                uiMethods.showErrorMessage(context, ex);
+              }
             },
           ),
         ),
