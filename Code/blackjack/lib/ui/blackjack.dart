@@ -1,30 +1,9 @@
 import 'package:blackjack/bl/card.dart';
 import 'package:blackjack/globals.dart';
 import 'package:blackjack/ui/background.dart';
+import 'package:blackjack/ui/uiMethods.dart';
 import 'package:flutter/material.dart';
 import 'package:blackjack/bl/gameMethods.dart';
-
-class UIMethods {
-  final void Function() updateUi;
-  UIMethods({this.updateUi});
-
-  Future<void> showErrorMessage(BuildContext context, dynamic ex) async {
-    return showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Error"),
-            content: Text(ex.toString()),
-            actions: <Widget>[
-              RaisedButton(
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          );
-        });
-  }
-}
 
 UIMethods uiMethods;
 
@@ -182,16 +161,25 @@ class _MenuButtonsState extends State<MenuButtons> {
         ButtonTheme(
           minWidth: 120,
           child: RaisedButton(
-            child: Text("Help"),
-            onPressed: _showHelp,
-          ),
+              child: Text("Help"),
+              onPressed: () {
+                try {
+                  _showHelp();
+                } catch (ex) {
+                  uiMethods.showErrorMessage(context, ex);
+                }
+              }),
         ),
         ButtonTheme(
           minWidth: 120,
           child: RaisedButton(
             child: Text("Main Menu"),
             onPressed: () {
-              Navigator.pop(context);
+              try {
+                Navigator.pop(context);
+              } catch (ex) {
+                uiMethods.showErrorMessage(context, ex);
+              }
             },
           ),
         ),
