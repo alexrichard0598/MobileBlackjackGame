@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 void main() {
   runApp(
     MaterialApp(
-      title: "Blackjack",
+      title: "Richard's Blackjack",
       home: new MainMenu(),
     ),
   );

@@ -81,7 +81,7 @@ class DatabaseHelper {
 
   Future<int> update(Profile profile) async {
     Database db = await instance.database;
-    int id = profile.toMap()["ID"];
+    int id = profile.id;
     return await db
         .update(table, profile.toMap(), where: "$colId = ?", whereArgs: [id]);
   }

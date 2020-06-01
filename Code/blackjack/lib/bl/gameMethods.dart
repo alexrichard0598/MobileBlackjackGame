@@ -1,12 +1,15 @@
 import 'dart:async';
 
 import 'package:blackjack/bl/hand.dart';
+import 'package:blackjack/bl/profile.dart';
 import 'package:blackjack/globals.dart';
+import 'package:blackjack/main.dart';
 import 'package:flutter/material.dart';
-import 'card.dart';
+import 'package:blackjack/bl/card.dart';
 
 class GameMethods {
   Function updateUI;
+  Profile _currentProfile;
 
   GameMethods(uiUpdater) {
     updateUI = uiUpdater;
@@ -126,10 +129,11 @@ class GameMethods {
       playerLost();
     } else if (dealerHasStood && dlrValue < plrValue) {
       playerWon();
-    } else if (playerHasStood && dlrValue < plrValue) {
-      hit(dealerHand);
     } else if (playerHasStood && (dlrValue > plrValue || dlrValue >= 17)) {
       dealerHasStood = true;
+      checkGameState();
+    } else if (playerHasStood && dlrValue < plrValue) {
+      hit(dealerHand);
     }
   }
 
@@ -137,18 +141,37 @@ class GameMethods {
     statusMsg = "You loose!";
     isHoleRevealed = true;
     updateUI();
-    endGame();
+    endGame(false);
   }
 
   playerWon() {
     statusMsg = "Congratulations! You Win!";
     isHoleRevealed = true;
     updateUI();
-    endGame();
+    endGame(true);
   }
 
-  endGame() {
+  endGame(bool playerWon) async {
+    int plrValue = calculateHandValue(playerHand, false);
+    int dlrValue = calculateHandValue(dealerHand, true);
     isGameOver = true;
+    await _getCurrentProfile();
+    Profile profileUpdate = Profile(
+        id: _currentProfile.id,
+        name: _currentProfile.name,
+        wins: playerWon ? _currentProfile.wins + 1 : _currentProfile.wins,
+        losses: playerWon ? _currentProfile.losses : _currentProfile.losses + 1,
+        playerBlackjacks: plrValue == 21
+            ? _currentProfile.playerBlackjacks + 1
+            : _currentProfile.playerBlackjacks,
+        dealerBlackjacks: dlrValue == 21
+            ? _currentProfile.dealerBlackjacks + 1
+            : _currentProfile.dealerBlackjacks,
+        totalPlayerHand: _currentProfile.totalPlayerHand + plrValue,
+        totalDealerHand: _currentProfile.totalDealerHand + dlrValue,
+        totalGames: _currentProfile.totalGames + 1);
+
+    dbHelper.update(profileUpdate);
   }
 
   void resetGameGlobals() {
@@ -190,5 +213,10 @@ class GameMethods {
       updateUI();
       if (dealerHasStood) t.cancel();
     });
+  }
+
+  _getCurrentProfile() async {
+    final currentUserRow = await dbHelper.queryByID(currentUserID);
+    _currentProfile = Profile.fromMap(currentUserRow.first);
   }
 }
