@@ -19,6 +19,12 @@ class _MainMenuState extends State<MainMenu> {
   String profileName;
 
   @override
+  void initState() {
+    _createDefaultProfile();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
     _getCurrentProfile();
@@ -99,5 +105,12 @@ class _MainMenuState extends State<MainMenu> {
     userProfile = Profile.fromMap(currentUserRow.first);
     profileName = userProfile.name;
     setState(() {});
+  }
+
+  void _createDefaultProfile() async {
+    var defaultUser;
+    final defaultProfileRow = await dbHelper.queryByID(1);
+    defaultProfileRow.forEach((row) => defaultUser = row);
+    if (defaultUser == null) dbHelper.insert(Profile(name: "DefaultProfile"));
   }
 }
