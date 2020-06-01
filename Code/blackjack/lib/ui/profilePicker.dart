@@ -1,5 +1,11 @@
+import 'package:blackjack/bl/profile.dart';
+import 'package:blackjack/globals.dart';
+import 'package:blackjack/main.dart';
 import 'package:flutter/material.dart';
 import 'package:blackjack/ui/background.dart';
+import 'package:blackjack/ui/uiMethods.dart';
+
+List<DropdownMenuItem<String>> items = [];
 
 class ProfilePicker extends StatefulWidget {
   @override
@@ -8,7 +14,18 @@ class ProfilePicker extends StatefulWidget {
 
 class _ProfilePickerState extends State<ProfilePicker> {
   @override
+  void initState() {
+    _loadProfilesForDDB();
+
+    super.initState();
+  }
+
+  String currentProfileName;
+
+  @override
   Widget build(BuildContext context) {
+    TextEditingController txtNewUserName = TextEditingController();
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -36,11 +53,16 @@ class _ProfilePickerState extends State<ProfilePicker> {
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                             child: TextField(
+                              controller: txtNewUserName,
                               decoration: InputDecoration(
                                 hintText: "User Name",
                                 fillColor: Colors.white,
                                 filled: true,
                               ),
+                              maxLength: 24,
+                              buildCounter: (context,
+                                      {currentLength, isFocused, maxLength}) =>
+                                  null,
                             ),
                           ),
                         ),
@@ -48,7 +70,16 @@ class _ProfilePickerState extends State<ProfilePicker> {
                           padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
                           child: RaisedButton(
                             child: Text("Create New User"),
-                            onPressed: () {},
+                            onPressed: () {
+                              String newUserName = txtNewUserName.text;
+                              if (newUserName == "") {
+                                UIMethods.messageBox(context,
+                                    title: "Error",
+                                    message: "The user name can't be blank");
+                              } else {
+                                _createNewUser(newUserName);
+                              }
+                            },
                           ),
                         )
                       ],
@@ -58,12 +89,51 @@ class _ProfilePickerState extends State<ProfilePicker> {
                       children: <Widget>[
                         RaisedButton(
                           child: Text("Delete Profile"),
-                          onPressed: () {},
+                          onPressed: () {
+                            if (currentUserID == 1) {
+                              UIMethods.messageBox(context,
+                                  title: "Error",
+                                  message:
+                                      "You can't delete the default profile");
+                            } else {
+                              dbHelper.delete(currentUserID);
+                              currentUserID = 1;
+                              _loadProfilesForDDB();
+                            }
+                          },
                           color: Colors.red,
                         ),
                         RaisedButton(
                           child: Text("Reset Profile"),
-                          onPressed: () {},
+                          onPressed: () async {
+                            await _getCurrentProfileName();
+                            showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("Reset Profile"),
+                                    content: SingleChildScrollView(
+                                        child: Text(
+                                            "Warning reseting the profile will clear all stored user info. Are you sure you wish to reset profile $currentProfileName?")),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                        child: Text("Yes"),
+                                        onPressed: () {
+                                          dbHelper.update(Profile(
+                                              id: currentUserID,
+                                              name: currentProfileName));
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      FlatButton(
+                                        child: Text("No"),
+                                        onPressed: () => Navigator.pop(context),
+                                      )
+                                    ],
+                                  );
+                                });
+                          },
                           color: Colors.amber,
                         ),
                       ],
@@ -88,6 +158,47 @@ class _ProfilePickerState extends State<ProfilePicker> {
       ),
     );
   }
+
+  void _createNewUser(newUserName) async {
+    var newUser;
+    final defaultProfileRow = await dbHelper.queryByName(newUserName);
+    defaultProfileRow.forEach((row) => newUser = row);
+    if (newUser != null)
+      UIMethods.messageBox(context,
+          title: "Error", message: "A user already exists with that name");
+    else {
+      dbHelper.insert(Profile(name: newUserName));
+      UIMethods.messageBox(context,
+          title: "New User Created", message: "User $newUserName created");
+      _loadProfilesForDDB();
+    }
+  }
+
+  void _loadProfilesForDDB() async {
+    items = [];
+    await dbHelper.queryAllRows().then((listMap) {
+      listMap.map((map) {
+        return _getDDW(map);
+      }).forEach((dropdownItem) {
+        items.add(dropdownItem);
+      });
+    });
+    setState(() {});
+  }
+
+  DropdownMenuItem<String> _getDDW(Map<String, dynamic> map) {
+    return DropdownMenuItem<String>(
+      value: map['ID'].toString(),
+      child: Text(map['Name']),
+    );
+  }
+
+  void _getCurrentProfileName() async {
+    Profile userProfile;
+    final currentUserRow = await dbHelper.queryByID(currentUserID);
+    userProfile = Profile.fromMap(currentUserRow.first);
+    currentProfileName = userProfile.name;
+  }
 }
 
 class UserDropdown extends StatefulWidget {
@@ -96,30 +207,19 @@ class UserDropdown extends StatefulWidget {
 }
 
 class _UserDropdownState extends State<UserDropdown> {
-  List _users = ["User 1", "User Bob", "Agent 47", "Falco", "Fluke"];
   List<DropdownMenuItem<String>> _dropDownMenuItems;
   String _currentUser;
 
   @override
   void initState() {
-    _dropDownMenuItems = getDropDownMenuItems();
-    _currentUser = _dropDownMenuItems[0].value;
     super.initState();
-  }
-
-  List<DropdownMenuItem<String>> getDropDownMenuItems() {
-    List<DropdownMenuItem<String>> items = new List();
-    for (String user in _users) {
-      items.add(new DropdownMenuItem(
-        value: user,
-        child: Text(user),
-      ));
-    }
-    return items;
   }
 
   @override
   Widget build(BuildContext context) {
+    _dropDownMenuItems = items;
+    _currentUser = currentUserID.toString();
+
     return DropdownButton<String>(
       isExpanded: true,
       value: _currentUser,
@@ -127,6 +227,7 @@ class _UserDropdownState extends State<UserDropdown> {
       onChanged: (selectedUser) {
         setState(() {
           _currentUser = selectedUser;
+          currentUserID = int.parse(selectedUser);
         });
       },
     );

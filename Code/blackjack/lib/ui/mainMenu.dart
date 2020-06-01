@@ -1,3 +1,6 @@
+import 'package:blackjack/bl/profile.dart';
+import 'package:blackjack/globals.dart';
+import 'package:blackjack/main.dart';
 import 'package:blackjack/ui/background.dart';
 import 'package:blackjack/ui/blackjack.dart';
 import 'package:blackjack/ui/profilePicker.dart';
@@ -5,10 +8,20 @@ import 'package:blackjack/ui/stats.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class MainMenu extends StatelessWidget {
+class MainMenu extends StatefulWidget {
+  MainMenu({Key key}) : super(key: key);
+
+  @override
+  _MainMenuState createState() => _MainMenuState();
+}
+
+class _MainMenuState extends State<MainMenu> {
+  String profileName;
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+    _getCurrentProfile();
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -17,6 +30,14 @@ class MainMenu extends StatelessWidget {
           Align(
             alignment: Alignment(0, -0.8),
             child: Image.asset("assets/images/logo.png"),
+          ),
+          Align(
+            alignment: Alignment(0, -0.92),
+            child: Text("Current Profile: $profileName",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                )),
           ),
           // #region Buttons
           Center(
@@ -70,5 +91,13 @@ class MainMenu extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _getCurrentProfile() async {
+    Profile userProfile;
+    final currentUserRow = await dbHelper.queryByID(currentUserID);
+    userProfile = Profile.fromMap(currentUserRow.first);
+    profileName = userProfile.name;
+    setState(() {});
   }
 }

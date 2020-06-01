@@ -21,4 +21,26 @@ class UIMethods {
           );
         });
   }
+
+  static Future<void> messageBox(BuildContext context,
+      {title = "", message = ""}) {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(title),
+            content: SingleChildScrollView(
+                child: Text(message)),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("Ok"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          );
+        });
+  }
 }

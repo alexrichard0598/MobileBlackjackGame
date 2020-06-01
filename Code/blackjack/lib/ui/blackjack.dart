@@ -1,10 +1,13 @@
+import 'dart:async';
+
 import 'package:blackjack/globals.dart';
 import 'package:blackjack/ui/background.dart';
 import 'package:blackjack/ui/uiMethods.dart';
 import 'package:flutter/material.dart';
 import 'package:blackjack/bl/gameMethods.dart';
 
-UIMethods uiMethods;
+UIMethods _uiMethods;
+GameMethods _gameMethods;
 
 class Blackjack extends StatefulWidget {
   @override
@@ -20,11 +23,20 @@ class _BlackjackState extends State<Blackjack> {
   void initState() {
     super.initState();
 
-    //Initialize the game
-    GameMethods.startGame();
-
     //bind the set state of this widget to uiUpdate
-    uiMethods = UIMethods(updateUi: updateUI);
+    _uiMethods = UIMethods(updateUi: updateUI);
+
+    _gameMethods = GameMethods(_uiMethods.updateUi);
+
+    //Initialize the game
+    _gameMethods.startGame();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    _gameMethods.resetGameGlobals();
   }
 
   @override
@@ -44,38 +56,6 @@ class _BlackjackState extends State<Blackjack> {
   }
 }
 
-class DealerLable extends StatefulWidget {
-  DealerLable({Key key}) : super(key: key);
-
-  @override
-  _DealerLableState createState() => _DealerLableState();
-}
-
-class _DealerLableState extends State<DealerLable> {
-  @override
-  Widget build(BuildContext context) {
-    String lable = !isShoeRevealed ? ">" : "";
-    lable += GameMethods.calculateHandValue(dealerHand, true).toString();
-    return Align(
-      alignment: Alignment(0, -0.42),
-      child: Container(
-        alignment: Alignment.center,
-        width: 50,
-        height: 35,
-        color: Colors.white,
-        child: Text(
-          lable,
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            decoration: TextDecoration.none,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class StatusBar extends StatefulWidget {
   StatusBar({Key key}) : super(key: key);
 
@@ -88,20 +68,22 @@ class _StatusBarState extends State<StatusBar> {
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment(0, -0.95),
-      child: Container(
-        width: double.maxFinite,
-        height: 24,
-        color: Colors.white,
-        alignment: Alignment.center,
-        child: Text(
-          "Cogratulations! You Win.",
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            decoration: TextDecoration.none,
-          ),
-        ),
-      ),
+      child: statusMsg.length == 0
+          ? Container()
+          : Container(
+              width: double.maxFinite,
+              height: 24,
+              color: Colors.white,
+              alignment: Alignment.center,
+              child: Text(
+                statusMsg,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  decoration: TextDecoration.none,
+                ),
+              ),
+            ),
     );
   }
 }
@@ -120,7 +102,7 @@ class _DealerBoxState extends State<DealerBox> {
   Widget build(BuildContext context) {
     try {
       children.clear();
-      children = GameMethods.displayDealerHand();
+      children = _gameMethods.displayDealerHand();
     } catch (ex) {
       children.add(Container(
         child: Text(
@@ -151,6 +133,38 @@ class _DealerBoxState extends State<DealerBox> {
   }
 }
 
+class DealerLable extends StatefulWidget {
+  DealerLable({Key key}) : super(key: key);
+
+  @override
+  _DealerLableState createState() => _DealerLableState();
+}
+
+class _DealerLableState extends State<DealerLable> {
+  @override
+  Widget build(BuildContext context) {
+    String lable = !isHoleRevealed ? ">" : "";
+    lable += _gameMethods.calculateHandValue(dealerHand, true).toString();
+    return Align(
+      alignment: Alignment(0, -0.42),
+      child: Container(
+        alignment: Alignment.center,
+        width: 50,
+        height: 35,
+        color: Colors.white,
+        child: Text(
+          lable,
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+            decoration: TextDecoration.none,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class MenuButtons extends StatefulWidget {
   MenuButtons({
     Key key,
@@ -172,8 +186,8 @@ class _MenuButtonsState extends State<MenuButtons> {
             child: Text("New Game"),
             onPressed: () {
               try {
-                GameMethods.startGame();
-                uiMethods.updateUi();
+                _gameMethods.startGame();
+                _uiMethods.updateUi();
               } catch (ex) {
                 UIMethods.showErrorMessage(context, ex);
               }
@@ -220,10 +234,9 @@ class _MenuButtonsState extends State<MenuButtons> {
         "The player as two options, Hit or Stand. If you choose hit, the dealer deals " +
         "you another card. If you choose stand you end your turn and are not allowed any " +
         "more cards. After you stand the dealer will deal any additional cards to " +
-        "themselves until they beat the player or reach 17, unless it is a Soft Seventeen " +
-        "(a seventeen in which one of the cards is an Ace valued at 11)." +
-        "\r\n\r\n This varient of Blackjack uses three decks and the " +
-        "dealer wins all ties except when the player has Blackjack.";
+        "themselves until they beat the player or reach 17.\r\n\r\n" +
+        "This varient of Blackjack uses three decks and the dealer wins all ties " +
+        "except when the player has Blackjack.";
     return showDialog(
         context: context,
         barrierDismissible: false,
@@ -264,10 +277,13 @@ class _PlayerControlsState extends State<PlayerControls> {
             child: ButtonTheme(
               child: RaisedButton(
                 child: Text("Hit"),
-                onPressed: () {
-                  GameMethods.hit(playerHand);
-                  uiMethods.updateUi();
-                },
+                onPressed: isGameOver
+                    ? null
+                    : () {
+                        _gameMethods.hit(playerHand);
+                        _gameMethods.checkGameState();
+                        _uiMethods.updateUi();
+                      },
               ),
             ),
           ),
@@ -279,7 +295,7 @@ class _PlayerControlsState extends State<PlayerControls> {
               color: Colors.white,
               alignment: Alignment.center,
               child: Text(
-                GameMethods.calculateHandValue(playerHand, false).toString(),
+                _gameMethods.calculateHandValue(playerHand, false).toString(),
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 20,
@@ -293,7 +309,11 @@ class _PlayerControlsState extends State<PlayerControls> {
             child: ButtonTheme(
               child: RaisedButton(
                 child: Text("Stand"),
-                onPressed: () {},
+                onPressed: isGameOver
+                    ? null
+                    : () {
+                        _gameMethods.stand();
+                      },
               ),
             ),
           ),
@@ -317,7 +337,7 @@ class _PlayerBoxState extends State<PlayerBox> {
   Widget build(BuildContext context) {
     try {
       children.clear();
-      children = GameMethods.displayPlayerHand();
+      children = _gameMethods.displayPlayerHand();
     } catch (ex) {
       children.add(Container(
         child: Text(

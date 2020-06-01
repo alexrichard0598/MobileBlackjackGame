@@ -1,10 +1,18 @@
+import 'dart:async';
+
 import 'package:blackjack/bl/hand.dart';
 import 'package:blackjack/globals.dart';
 import 'package:flutter/material.dart';
 import 'card.dart';
 
 class GameMethods {
-  static Align createCardImage(BlackjackCard card, int cardNum,
+  Function updateUI;
+
+  GameMethods(uiUpdater) {
+    updateUI = uiUpdater;
+  }
+
+  Align createCardImage(BlackjackCard card, int cardNum,
       {bool isShoe = false}) {
     double x = -0.96 + 0.08 * cardNum;
     double y = 0;
@@ -20,20 +28,22 @@ class GameMethods {
     );
   }
 
-  static Hand sortHand(Hand hand) {
+  Hand sortHand(Hand hand) {
     Hand sorted = hand;
     sorted.sort();
     sorted.reverse();
     return sorted;
   }
 
-  static int calculateHandValue(Hand hand, bool isDealerHand) {
+  int calculateHandValue(Hand hand, bool isDealerHand) {
     int handValue = 0;
     Hand srtHand = Hand();
 
     if (isDealerHand) {
-      if (isShoeRevealed) {
-        srtHand = dealerHand;
+      if (isHoleRevealed) {
+        for (BlackjackCard card in hand.getHand()) {
+          srtHand.add(card);
+        }
       } else {
         List<BlackjackCard> dealerHandList = dealerHand.getHand();
         for (var i = 0; i < dealerHandList.length; i++) {
@@ -73,7 +83,7 @@ class GameMethods {
     return handValue;
   }
 
-  static List<Widget> displayPlayerHand() {
+  List<Widget> displayPlayerHand() {
     List<Widget> cards = new List<Widget>();
     List<BlackjackCard> handList = playerHand.getHand();
 
@@ -84,41 +94,75 @@ class GameMethods {
     return cards;
   }
 
-  static List<Widget> displayDealerHand() {
+  List<Widget> displayDealerHand() {
     List<Widget> cards = new List<Widget>();
     List<BlackjackCard> handList = dealerHand.getHand();
 
     for (var i = 0; i < handList.length; i++) {
-      cards.add(createCardImage(handList[i], i, isShoe: i == 0));
+      cards.add(
+          createCardImage(handList[i], i, isShoe: (i == 0 && !isHoleRevealed)));
     }
 
     return cards;
   }
 
-  static void hit(Hand hand) {
+  void hit(Hand hand) {
     hand.add(blackjackDeck.drawCard());
-    checkGameState();
+    updateUI();
   }
 
-  static void checkGameState() {
+  void checkGameState() {
     int plrValue = calculateHandValue(playerHand, false);
     int dlrValue = calculateHandValue(dealerHand, true);
-    if (plrValue > 21) {}
-    if (dlrValue > 21) {}
-    if (hasPlayerStood && dlrValue >= plrValue) {}
-    if (hasDealerStood && dlrValue < plrValue) {}
+    if (plrValue == 21) {
+      playerWon();
+    } else if (plrValue > 21 || dlrValue == 21) {
+      playerLost();
+    } else if (playerHasStood && dlrValue > 21) {
+      dealerHasStood = true;
+      playerWon();
+    } else if (playerHasStood && dlrValue >= plrValue) {
+      dealerHasStood = true;
+      playerLost();
+    } else if (dealerHasStood && dlrValue < plrValue) {
+      playerWon();
+    } else if (playerHasStood && dlrValue < plrValue) {
+      hit(dealerHand);
+    } else if (playerHasStood && (dlrValue > plrValue || dlrValue >= 17)) {
+      dealerHasStood = true;
+    }
   }
 
-  static void resetGameGlobals() {
+  playerLost() {
+    statusMsg = "You loose!";
+    isHoleRevealed = true;
+    updateUI();
+    endGame();
+  }
+
+  playerWon() {
+    statusMsg = "Congratulations! You Win!";
+    isHoleRevealed = true;
+    updateUI();
+    endGame();
+  }
+
+  endGame() {
+    isGameOver = true;
+  }
+
+  void resetGameGlobals() {
     playerHand.clear();
     dealerHand.clear();
     blackjackDeck.emptyDeck();
-    hasPlayerStood = false;
-    hasDealerStood = false;
-    isShoeRevealed = false;
+    playerHasStood = false;
+    dealerHasStood = false;
+    isHoleRevealed = false;
+    statusMsg = "";
+    isGameOver = false;
   }
 
-  static void startGame() {
+  void startGame() {
     resetGameGlobals();
 
     //Setup the deck
@@ -132,5 +176,19 @@ class GameMethods {
     //Deal the dealer cards
     dealerHand.add(blackjackDeck.drawCard());
     dealerHand.add(blackjackDeck.drawCard());
+
+    checkGameState();
+  }
+
+  void stand() {
+    playerHasStood = true;
+    isHoleRevealed = true;
+    updateUI();
+
+    Timer.periodic(Duration(seconds: 1), (t) {
+      checkGameState();
+      updateUI();
+      if (dealerHasStood) t.cancel();
+    });
   }
 }
