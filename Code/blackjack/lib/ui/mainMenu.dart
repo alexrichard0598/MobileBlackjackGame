@@ -34,60 +34,82 @@ class _MainMenuState extends State<MainMenu> {
         children: <Widget>[
           BlackjackBackground(),
           Align(
-            alignment: Alignment(0, -0.8),
+            alignment: Alignment(0, -0.75),
             child: Image.asset("assets/images/logo.png"),
           ),
           Align(
-            alignment: Alignment(0, -0.92),
-            child: Text("Current Profile: $profileName",
+            alignment: Alignment(0, -0.95),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.black,
+                  width: 2,
+                  style: BorderStyle.solid,
+                ),
+                color: Colors.white,
+              ),
+              padding: const EdgeInsets.all(6.0),
+              child: Text(
+                "Current Profile: $profileName",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                )),
+                ),
+              ),
+            ),
           ),
           // #region Buttons
           Center(
             child: Wrap(
               children: <Widget>[
                 Center(
-                  child: RaisedButton(
-                    onPressed: () {
-                      Navigator.push(
+                  child: ButtonTheme(
+                    child: RaisedButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Blackjack(),
+                            ));
+                      },
+                      child: Text("New Game"),
+                    ),
+                    buttonColor: Colors.green,
+                    minWidth: 130,
+                  ),
+                ),
+                Center(
+                  child: ButtonTheme(
+                    child: RaisedButton(
+                      onPressed: () {
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => Blackjack(),
-                          ));
-                    },
-                    color: Colors.green,
-                    child: Text("New Game"),
+                            builder: (context) => ProfilePicker(),
+                          ),
+                        );
+                      },
+                      child: Text("Change Profile"),
+                    ),
+                    buttonColor: Colors.orange,
+                    minWidth: 130,
                   ),
                 ),
                 Center(
-                  child: RaisedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ProfilePicker(),
-                        ),
-                      );
-                    },
-                    color: Colors.orange,
-                    child: Text("Change Profile"),
-                  ),
-                ),
-                Center(
-                  child: RaisedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Stats(),
-                        ),
-                      );
-                    },
-                    color: Colors.yellow,
-                    child: Text("Stats"),
+                  child: ButtonTheme(
+                    child: RaisedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Stats(),
+                          ),
+                        );
+                      },
+                      child: Text("Stats"),
+                    ),
+                    minWidth: 130,
+                    buttonColor: Colors.yellow,
                   ),
                 ),
               ],

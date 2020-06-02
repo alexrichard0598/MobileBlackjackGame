@@ -116,18 +116,21 @@ class _DealerBoxState extends State<DealerBox> {
         ),
       ));
     }
-    return Align(
-      alignment: Alignment(0, -0.8),
-      child: Container(
-        width: double.maxFinite,
-        height: 120,
-        decoration: BoxDecoration(
-          color: Colors.black,
-          border: Border.all(
-            color: Colors.yellow,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Align(
+        alignment: Alignment(0, -0.8),
+        child: Container(
+          width: double.maxFinite,
+          height: 120,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            border: Border.all(
+              color: Colors.yellow,
+            ),
           ),
+          child: Stack(children: children),
         ),
-        child: Stack(children: children),
       ),
     );
   }
@@ -243,7 +246,13 @@ class _MenuButtonsState extends State<MenuButtons> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text("Help"),
-            content: SingleChildScrollView(child: Text(helpText)),
+            content: Scrollbar(
+              child: SingleChildScrollView(
+                child: Text(helpText),
+                primary: true,
+                padding: EdgeInsets.all(8),
+              ),
+            ),
             actions: <Widget>[
               FlatButton(
                 child: Text("Ok"),
@@ -351,19 +360,22 @@ class _PlayerBoxState extends State<PlayerBox> {
         ),
       ));
     }
-    return Align(
-      alignment: Alignment(0, 0.9),
-      child: Container(
-        width: double.maxFinite,
-        height: 120,
-        decoration: BoxDecoration(
-          color: Colors.black,
-          border: Border.all(
-            color: Colors.yellow,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Align(
+        alignment: Alignment(0, 0.9),
+        child: Container(
+          width: double.maxFinite,
+          height: 120,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            border: Border.all(
+              color: Colors.yellow,
+            ),
           ),
-        ),
-        child: Stack(
-          children: children,
+          child: Stack(
+            children: children,
+          ),
         ),
       ),
     );

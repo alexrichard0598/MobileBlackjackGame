@@ -80,6 +80,7 @@ class _ProfilePickerState extends State<ProfilePicker> {
                                 _createNewUser(newUserName);
                               }
                             },
+                            color: Colors.green,
                           ),
                         )
                       ],
