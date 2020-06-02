@@ -7,6 +7,7 @@ import 'package:blackjack/ui/profilePicker.dart';
 import 'package:blackjack/ui/stats.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MainMenu extends StatefulWidget {
   MainMenu({Key key}) : super(key: key);
@@ -33,9 +34,28 @@ class _MainMenuState extends State<MainMenu> {
         fit: StackFit.expand,
         children: <Widget>[
           BlackjackBackground(),
-          Align(
-            alignment: Alignment(0, -0.75),
-            child: Image.asset("assets/images/logo.png"),
+          Stack(
+            children: <Widget>[
+              Align(
+                alignment: Alignment(0, -0.8),
+                child: Image.asset("assets/images/LogoTransparent.png"),
+              ),
+              Align(
+                alignment: Alignment(0, -0.8),
+                child: Text("Richard's Blackjack",
+                    style: GoogleFonts.robotoSlab(
+                      textStyle: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        decoration: TextDecoration.underline,
+                        decorationStyle: TextDecorationStyle.solid,
+                        decorationColor: Colors.yellow,
+                        decorationThickness: 2,
+                      ),
+                    )),
+              ),
+            ],
           ),
           Align(
             alignment: Alignment(0, -0.95),

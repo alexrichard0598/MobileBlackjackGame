@@ -1,5 +1,4 @@
 import 'package:blackjack/bl/databaseHelper.dart';
-import 'package:blackjack/bl/profile.dart';
 import 'package:blackjack/ui/mainMenu.dart';
 import 'package:flutter/material.dart';
 

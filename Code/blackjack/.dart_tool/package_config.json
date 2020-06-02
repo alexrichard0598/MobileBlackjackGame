@@ -74,6 +74,24 @@
       "languageVersion": "2.2"
     },
     {
+      "name": "google_fonts",
+      "rootUri": "file:///C:/Users/Alex%20Richard/AppData/Roaming/Pub/Cache/hosted/pub.dartlang.org/google_fonts-1.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.3"
+    },
+    {
+      "name": "http",
+      "rootUri": "file:///C:/Users/Alex%20Richard/AppData/Roaming/Pub/Cache/hosted/pub.dartlang.org/http-0.12.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.4"
+    },
+    {
+      "name": "http_parser",
+      "rootUri": "file:///C:/Users/Alex%20Richard/AppData/Roaming/Pub/Cache/hosted/pub.dartlang.org/http_parser-3.1.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.3"
+    },
+    {
       "name": "image",
       "rootUri": "file:///C:/Users/Alex%20Richard/AppData/Roaming/Pub/Cache/hosted/pub.dartlang.org/image-2.1.12",
       "packageUri": "lib/",
@@ -112,6 +130,12 @@
     {
       "name": "path_provider_platform_interface",
       "rootUri": "file:///C:/Users/Alex%20Richard/AppData/Roaming/Pub/Cache/hosted/pub.dartlang.org/path_provider_platform_interface-1.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
+    },
+    {
+      "name": "pedantic",
+      "rootUri": "file:///C:/Users/Alex%20Richard/AppData/Roaming/Pub/Cache/hosted/pub.dartlang.org/pedantic-1.9.0",
       "packageUri": "lib/",
       "languageVersion": "2.1"
     },
@@ -230,7 +254,7 @@
       "languageVersion": "2.6"
     }
   ],
-  "generated": "2020-06-01T20:37:00.895381Z",
+  "generated": "2020-06-02T01:29:31.695648Z",
   "generator": "pub",
   "generatorVersion": "2.8.3"
 }

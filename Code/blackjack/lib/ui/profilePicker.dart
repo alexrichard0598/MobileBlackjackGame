@@ -107,7 +107,7 @@ class _ProfilePickerState extends State<ProfilePicker> {
                         RaisedButton(
                           child: Text("Reset Profile"),
                           onPressed: () async {
-                            await _getCurrentProfileName();
+                            _getCurrentProfileName();
                             showDialog(
                                 context: context,
                                 barrierDismissible: false,
