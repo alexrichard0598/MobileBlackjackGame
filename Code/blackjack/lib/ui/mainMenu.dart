@@ -112,5 +112,6 @@ class _MainMenuState extends State<MainMenu> {
     final defaultProfileRow = await dbHelper.queryByID(1);
     defaultProfileRow.forEach((row) => defaultUser = row);
     if (defaultUser == null) dbHelper.insert(Profile(name: "DefaultProfile"));
+    _getCurrentProfile();
   }
 }
