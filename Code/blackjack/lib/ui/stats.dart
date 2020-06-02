@@ -76,9 +76,9 @@ class _StatsState extends State<Stats> {
                           Text(
                               "Dealer Blackjacks: ${profiles[index].dealerBlackjacks}"),
                           Text(
-                              "Average Player Hand: ${profiles[index].totalGames == 0 ? 0 : profiles[index].totalPlayerHand / profiles[index].totalGames}"),
+                              "Average Player Hand: ${profiles[index].totalGames == 0 ? 0 : (profiles[index].totalPlayerHand / profiles[index].totalGames).toStringAsFixed(2)}"),
                           Text(
-                              "Average Dealer Hand: ${profiles[index].totalGames == 0 ? 0 : profiles[index].totalDealerHand / profiles[index].totalGames}"),
+                              "Average Dealer Hand: ${profiles[index].totalGames == 0 ? 0 : (profiles[index].totalDealerHand / profiles[index].totalGames).toStringAsFixed(2)}"),
                         ],
                       ),
                     ),
